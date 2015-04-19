@@ -1,0 +1,25 @@
+Recommendation Engine
+
+Primary Structure:
+
+-- data_processing
+   Place to keep all the files related to data processing, from text parsing/filtering to
+   communication with the database.
+
+-- recommendation_engine
+   -- classic collaborative filtering techniques
+   TODO: add implementation
+
+   -- Collaborative Topic Modelling (Blei 2011)
+   TODO: add implementation
+   https://www.cs.princeton.edu/~chongw/papers/WangBlei2011.pdf
+
+-- eval
+   Place to keep scripts for the engine's evaluation
+   TODO: review evaluation methods
+   TODO: add test results
+
+-- gui
+   [Optional] Engine Graphic interface
+   Tools for building user graphs, data plots and the like.
+
