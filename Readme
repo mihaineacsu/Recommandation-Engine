@@ -4,9 +4,10 @@ Dependencies:
 
     MongoDB: https://www.mongodb.org/
     PyMongo: https://github.com/mongodb/mongo-python-driver
+    [see bellow]
 
 
-Primary Structure:
+Project Primary Structure:
 
 -- data_processing
    Place to keep all the files related to data processing, from text parsing/filtering to the
@@ -30,3 +31,64 @@ Primary Structure:
 -- gui
    [Optional] Engine Graphic interface
    Tools for building user graphs, data plots and the like.
+
+
+
+Database Setup:
+
+    To install mongodb:
+    Download archive from: https://www.mongodb.org/downloads
+
+        On Linux:
+        Extract archive somewhere and it's ready to go.
+        The interesting files are in ./bin:
+            mongo (the console) - which you can use to inspect the database
+            mongod (the actual database server)
+
+        I suggest creating a sym-link on /usr/bin at least for these binaries.
+        mongoimport, mongoexport and mongorestore are also useful.
+
+        To start the mongo database:
+        sudo mongod --dbpath [PATH_TO_WHERE_YOU_WANT_TO_STORE_THE_DATA]
+        This process has to always run while you use the database.
+
+        If you want to play a bit with the data, you can do so using the mongo console.
+        eg:
+        >    use yelp
+        >    show collections
+        Here "yelp" is the name of the database.
+        Right now it's just an empty database, but we are about to add our dataset.
+
+        Note: There are also some gui apps for mongo, I can't recommend any though.
+
+    Dataset:
+        Now, you need to get the dataset from: http://www.yelp.com/dataset_challenge
+        You'll see it's an archive of json files, which happens to be a mongo-friendly format.
+
+        Import them in the database is as easy as:
+        mongoimport --db yelp --collection users yelp_academic_dataset_user.json
+        mongoimport --db yelp --collection business yelp_academic_dataset_business.json
+        mongoimport --db yelp --collection tip yelp_academic_dataset_tip.json
+        mongoimport --db yelp --collection review yelp_academic_dataset_review.json
+
+    Note:
+        In the mongo console, I suggest setting up indexes for the fields you are most likely to
+        use in your queries:
+
+        e.g:
+        > use yelp
+        > db.users.createIndex({user_id:1})
+        > db.review.createIndex({user_id:1, review_id:1})
+        > db.business.createIndex({business_id:1}
+        > db.tip.createIndex({user_id:1, business_id:1})
+        > db.checkin.createIndex({business_id:1})
+
+    More on how to use mongo:
+        http://docs.mongodb.org/manual/core/introduction/
+
+    To install pymongo:
+        easy_install pymongo
+
+        PyMongo is the python interface with the mongo database.
+        I have written a quick wrapper for it in data_processing/mongo.py
+        You can test it works as: python ./data_processing/mongo.py
