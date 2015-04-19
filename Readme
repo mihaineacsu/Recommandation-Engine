@@ -3,7 +3,7 @@ Recommendation Engine
 Primary Structure:
 
 -- data_processing
-   Place to keep all the files related to data processing, from text parsing/filtering to
+   Place to keep all the files related to data processing, from text parsing/filtering to the
    communication with the database.
 
 -- recommendation_engine
@@ -22,4 +22,3 @@ Primary Structure:
 -- gui
    [Optional] Engine Graphic interface
    Tools for building user graphs, data plots and the like.
-
