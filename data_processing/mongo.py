@@ -68,11 +68,14 @@ class MongoORM():
 
 
 def _test():
+
+    #PyMongo Documentation: http://api.mongodb.org/python/current/index.html
+
+    #Usage example
     db = MongoORM()
     print db.get_collection_count("users")
 
     # get 10 random users
-
     count_users = 10
     users = db.get_collection("users")
 

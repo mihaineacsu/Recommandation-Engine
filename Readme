@@ -1,10 +1,18 @@
 Recommendation Engine
 
+Dependencies:
+
+    MongoDB: https://www.mongodb.org/
+    PyMongo: https://github.com/mongodb/mongo-python-driver
+
+
 Primary Structure:
 
 -- data_processing
    Place to keep all the files related to data processing, from text parsing/filtering to the
    communication with the database.
+
+   - mongo.py - clean wrapper for all operations involving the database
 
 -- recommendation_engine
    -- classic collaborative filtering techniques
