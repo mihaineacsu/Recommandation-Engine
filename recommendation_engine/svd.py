@@ -28,7 +28,7 @@ def svd_instance(data, K=100):
     svd.set_data(data)
 
     svd.compute(k=K,
-                min_values=10,
+                min_values=5,
                 pre_normalize=None,
                 mean_center=True,
                 post_normalize=True,
@@ -69,8 +69,16 @@ def _test():
     svd = svd_instance(train)
     svd_test_accuracy(svd, test)
 
-    svdn = svd_neighbourhood(train)
-    svd_test_accuracy(svdn, test)
+    # Print similiar items
+    print svd.similar(1)
+
+    # Print similiar users
+    print svd.recommend(1)
+
+    # svdn = svd_neighbourhood(train)
+    # svd_test_accuracy(svdn, test)
+
+
 
 
 if __name__ == "__main__":
