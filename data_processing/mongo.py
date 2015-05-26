@@ -12,8 +12,15 @@ class MongoORM():
     def get_collection(self, name):
         return self.db[name].find()
 
+    # bypass the timeout mechanism (for very large collections/items)
+    def get_collection_large(self, name):
+        return self.db[name].find(no_cursor_timeout=True).batch_size(500)
+
     def get_item(self, collection, item):
         return self.db[collection].find(item)
+
+    def get_one_item(self, collection, item):
+        return self.db[collection].find_one(item)
 
     def get_item_by_key(self, collection, key, value):
         return self.db[collection].find_one({key: value})
@@ -41,8 +48,8 @@ class MongoORM():
     # If upsert is set to true, creates a new document when no document matches
     # the query criteria. The default value is false, which does not insert a new document
     # when no match is found.
-    def upsert_item(self, collection, item):
-        self.db[collection].update({"_id": item}, {"$set": item}, upsert=True)
+    def upsert_item(self, collection, item, upsert=True):
+        self.db[collection].update({"_id": item["_id"]}, {"$set": item}, upsert=upsert)
 
     def update_item(self, collection, item, update_blob):
         return self.db[collection].update(item, update_blob)

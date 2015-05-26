@@ -21,7 +21,6 @@ def svd_neighbourhood(data, K=100):
     return svd
 
 
-
 def svd_instance(data, K=100):
 
     svd = SVD()
@@ -34,6 +33,7 @@ def svd_instance(data, K=100):
                 post_normalize=True,
                 savefile=None)
     return svd
+
 
 def svd_test_accuracy(svd, test):
 
@@ -52,6 +52,7 @@ def svd_test_accuracy(svd, test):
     print 'RMSE=%s' % rmse.compute()
     print 'MAE=%s' % mae.compute()
 
+
 def sample_data():
 
     path = "../temp/ml-1m/ratings.dat"
@@ -62,6 +63,7 @@ def sample_data():
 
     data.load(path, sep='::', format=format)
     return data.split_train_test(percent=80) # 80% train, 20% test
+
 
 def _test():
 
@@ -77,8 +79,6 @@ def _test():
 
     # svdn = svd_neighbourhood(train)
     # svd_test_accuracy(svdn, test)
-
-
 
 
 if __name__ == "__main__":
