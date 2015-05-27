@@ -31,7 +31,7 @@ def get_corpus(coll="test_corpus", keys=None, max_items=50000):
     return corpus
 
 
-def get_sentences(corpus, max_items=40000):
+def corpus_get_sentences(corpus, max_items=40000):
     p = Parser()
     result = []
 
@@ -51,6 +51,8 @@ def get_sentences(corpus, max_items=40000):
 
 def train_w2vec(sentences, path="./w2v_restaurants.model"):
 
+    print "Train w2vec."
+
     t = Timer()
     model = Word2Vec(sentences, size=100, window=5, min_count=5, workers=4)
     model.save(path)
@@ -60,6 +62,8 @@ def train_w2vec(sentences, path="./w2v_restaurants.model"):
 from gensim import corpora, models
 
 def preprocess_lda(sentences):
+
+    print "Preproces lda."
 
     t = Timer()
     dictionary = corpora.Dictionary(sentences)
@@ -87,21 +91,64 @@ def lda_train():
     lda.save("./lda_restaurants.mm")
 
 
-def main():
+def store_sentences(max_item):
 
-    reviews = get_corpus()
+    coll_load  = "test_corpus"
+    coll_store = "test_optimized"
 
-    # Process sentences from reviews
+    p = Parser()
+    db = MongoORM()
+
+    prefix = 50000
+    count = 0
+
     t = Timer()
-    sentences = get_sentences(reviews, max_items=50000)
-    t.measure("Sentences extracted.")
+    for item in db.get_collection(coll_load):
+
+        if prefix > 0:
+            prefix -= 1
+            continue
+
+        sentences = p.parse(item["text"])
+        del item["text"]
+        item["sentences"] = sentences
+
+        db.insert_item(coll_store, item)
+
+        count += 1
+        if count % 1000 == 0:
+            print count, " reviews processed."
+        if count == max_item:
+            break
+    t.measure("Collection parsed.")
+
+def db_get_sentences():
+
+    coll = "test_optimized"
+
+    db = MongoORM()
+    result = []
+    for item in db.get_collection(coll):
+        result += item["sentences"]
+    return result
+
+def main(max_items=50000):
+
+    # reviews = get_corpus(max_items=max_items)
+    # # Process sentences from reviews
+    # t = Timer()
+    # sentences = get_sentences(reviews, max_items=max_items)
+    # t.measure("Sentences extracted.")
+
+    store_sentences(max_items)
+    # sentences = db_get_sentences()
 
     # Word2Vector
-    train_w2vec(reviews)
+    # train_w2vec(sentences)
 
     # LDA model
-    preprocess_lda(reviews)
-    lda_train()
+    # preprocess_lda(sentences)
+    # lda_train()
 
 if __name__ == "__main__":
 

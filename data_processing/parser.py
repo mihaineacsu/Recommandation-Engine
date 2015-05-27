@@ -49,7 +49,7 @@ class Parser():
         for sent in sentences:
             sent = [token for token in sent.strip().split() if token not in self.stopwords]
 
-            if len(sent) == 0:
+            if len(sent) <= 1:
                 continue
 
             tokens = nltk.pos_tag(sent)
