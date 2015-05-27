@@ -65,7 +65,6 @@ def reviewed_businesses(id):
 
 def list_recommandations(user_reviews, other_reviews):
 	""" Returns a list of recommandations for the user.
-
 	Find other reviews that are not common between the two users.
 	"""
 
@@ -90,8 +89,8 @@ def pearson_correlation(businesses_person1, businesses_person2):
 	if not common_businesses:
 		return 0
 
-	return cosineDistance(businesses_person1, businesses_person2, common_businesses)
-	#return clasic(businesses_person1, businesses_person2, common_businesses)
+	# return cosineDistance(businesses_person1, businesses_person2, common_businesses)
+	return classic(businesses_person1, businesses_person2, common_businesses)
 
 def classic(businesses_person1, businesses_person2, common_businesses):
 
@@ -103,9 +102,9 @@ def classic(businesses_person1, businesses_person2, common_businesses):
 
 	product_sum = sum([businesses_person1[business_id]['stars'] * businesses_person2[business_id]['stars'] for business_id in common_businesses])
 
-	nominator = float(product_sum - (sum_person1 * sum_person2) / len(common_businesses))
-	denominator = float(sqrt((sum_sq_person1 - pow(sum_person1, 2) / len(common_businesses)) * \
-		(sum_sq_person2 - pow(sum_person2, 2) / len(common_businesses))))
+	nominator = product_sum*len(common_businesses) - (sum_person1 * sum_person2)
+	denominator = sqrt((sum_sq_person1*len(common_businesses) - pow(sum_person1, 2)) * \
+		(sum_sq_person2* len(common_businesses) - pow(sum_person2, 2)))
 
 	if denominator == 0:
 		return 0
