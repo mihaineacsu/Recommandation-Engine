@@ -1,7 +1,13 @@
 from math import sqrt
 from operator import itemgetter
+from sklearn.metrics import mean_squared_error
 
 from pymongo import MongoClient
+
+from sys import argv
+upper_limit = 1000
+if len(argv) is 2:
+	upper_limit = int(argv[1])
 
 client = MongoClient()
 db = client.yelp
@@ -11,9 +17,24 @@ def k_recommandations(user_id, k=10):
 	recommandations = compute_recommandations(user_id)
 	sorted_business_ids = [pair for pair in sorted(recommandations.items(), key=itemgetter(1))]
 	sorted_business_ids.reverse()
-	print sorted_business_ids
+
+	print "----> Mean squared err: %s\n" % compute_mean_sq_err(sorted_business_ids)
 
 	return [] if not sorted_business_ids else sorted_business_ids[:k]
+
+def compute_mean_sq_err(sorted_business_ids):
+	initial_scores = []
+	for i in sorted_business_ids:
+		found = db['business'].find_one({'business_id': i[0]})
+		if not found:
+			raise Exception('Not found!')
+		initial_scores.append(found['stars'])
+
+	if len(initial_scores) is 0:
+		print "not enough data"
+		return None
+
+	return mean_squared_error(initial_scores, [i[1] for i in sorted_business_ids])
 
 def compute_recommandations(user_id):
 	""" Returns a dictionary with a mapping of business_id : score.
@@ -24,7 +45,7 @@ def compute_recommandations(user_id):
 
 	current_user_businesses = reviewed_businesses(user_id)
 
-	for u in db['users'].find().limit(1000):
+	for u in db['users'].find().limit(upper_limit):
 		other_user_id = u['user_id']
 		# we won't run pearson_correlation against our current user
 		if other_user_id == user_id:
@@ -43,7 +64,7 @@ def compute_recommandations(user_id):
 
 			stars = other_user_businesses[recommended_business]['stars']
 			weighted_scores[recommended_business] += similarity_score * stars
-			normal_scores[recommended_business] += stars
+			normal_scores[recommended_business] += similarity_score
 
 
 	return dict((business_id, float(weighted_scores[business_id] / normal_scores[business_id])) for business_id in weighted_scores)
@@ -93,7 +114,6 @@ def pearson_correlation(businesses_person1, businesses_person2):
 	return classic(businesses_person1, businesses_person2, common_businesses)
 
 def classic(businesses_person1, businesses_person2, common_businesses):
-
 	sum_person1 = sum([businesses_person1[business_id]['stars'] for business_id in common_businesses])
 	sum_person2 = sum([businesses_person2[business_id]['stars'] for business_id in common_businesses])
 
@@ -165,5 +185,6 @@ def pearson_correlation_old(id_person1="Xqd0DzHaiyRqVH3WRG7hzg", id_person2="H1k
 		return 0
 
 	return nominator / denominator
+
 
 print k_recommandations("ZWOj6LmzwGvMDh-A85EOtA")
