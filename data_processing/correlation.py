@@ -89,8 +89,8 @@ def compute_recommandations(user_id):
 	else:
 		current_user_businesses = reviewed_businesses(user_id)
 	
-
-	for u in db['users'].find().limit(upper_limit):
+	# for u in db['users'].find().limit(upper_limit):
+	for u in db['users'].find():
 		other_user_id = u['user_id']
 		# we won't run pearson_correlation against our current user
 		if other_user_id == user_id:
@@ -172,8 +172,8 @@ def compute_similarity(businesses_person1, businesses_person2):
 	if not common_businesses:
 		return 0
 
-	# return cosineDistance(businesses_person1, businesses_person2, common_businesses)
-	return pearson_correlation(businesses_person1, businesses_person2, common_businesses)
+	return cosineDistance(businesses_person1, businesses_person2, common_businesses)
+	# return pearson_correlation(businesses_person1, businesses_person2, common_businesses)
 
 def pearson_correlation(businesses_person1, businesses_person2, common_businesses):
 	sum_person1 = sum([businesses_person1[business_id]['stars'] for business_id in common_businesses])
